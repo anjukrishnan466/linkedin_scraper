@@ -3,10 +3,10 @@
 This FastAPI-based project allows users to authenticate with LinkedIn using Selenium, fetch their connections using LinkedIn's Voyager API, and secure API endpoints with JWT authentication.
 
 ## Features
-- 🔑 Secure authentication with JWT
-- 🕵️‍♂️ Automated LinkedIn login using Selenium
-- 📄 Fetch LinkedIn connections via Voyager API
-- 🚀 FastAPI-based RESTful API
+-  Secure authentication with JWT
+-  Automated LinkedIn login using Selenium
+-  Fetch LinkedIn connections via Voyager API
+-  FastAPI-based RESTful API
 
 ## Prerequisites
 Before running this project, ensure you have:
@@ -50,7 +50,7 @@ uvicorn main:app --reload
 
 ## API Endpoints
 
-### 1️⃣ Login
+### 1️ Login
 #### `POST /login`
 Authenticates the user and returns a JWT token.
 
@@ -62,7 +62,7 @@ Authenticates the user and returns a JWT token.
 }
 ```
 
-### 2️⃣ Fetch Connections
+### 2️ Fetch Connections
 #### `GET /connections`
 Fetches LinkedIn connections for the logged-in user.
 
@@ -83,8 +83,14 @@ Authorization: Bearer <your-token>
   ]
 }
 ```
+### 3 Unit Testing
 
  
+To run unit tests, use the following command:
+
+python -m unittest test_scraper.py
+
+
 ## Troubleshooting
 - Ensure your LinkedIn credentials are correct in `.env`.
 - If LinkedIn blocks your request, try rotating user-agents in `scraper.py`.
