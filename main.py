@@ -1,22 +1,32 @@
-from fastapi import FastAPI
-from auth import get_logged_in_user  # ✅ Import from auth
-from scraper import get_connections  # ✅ Import from scraper
-from pydantic import BaseModel  # ✅ Import BaseModel
+from fastapi import FastAPI, Depends, HTTPException
+from scraper import LinkedInScraper
+from auth import create_access_token, verify_token
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 app = FastAPI()
 
- 
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
 @app.post("/login")
-def login_user(login_request: LoginRequest):
-    try:
-        scraper_instance.login(login_request.email, login_request.password)
-        token = create_access_token({"email": login_request.email})
-        return {"message": "Login successful", "access_token": token}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+def login():
+    """Authenticates the user and returns a JWT token."""
+    user_email = os.getenv("LINKEDIN_EMAIL")
+    user_password = os.getenv("LINKEDIN_PASSWORD")
+
+    if not user_email or not user_password:
+        raise HTTPException(status_code=401, detail="Invalid LinkedIn credentials")
+
+    access_token = create_access_token({"sub": user_email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
 @app.get("/connections")
-def connections(page: int = 1, count: int = 10):
-    return get_connections(page, count)
+def get_connections(page: int = 1, count: int = 10, user: dict = Depends(verify_token)):
+    """Fetches LinkedIn connections for the logged-in user."""
+    scraper = LinkedInScraper()
+    start = (page - 1) * count
+    return scraper.fetch_connections(start=start, count=count)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
